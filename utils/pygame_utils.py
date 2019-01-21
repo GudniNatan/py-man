@@ -86,9 +86,15 @@ def reverse_clamp(smaller_rect, larger_rect):
 #             larger_rect.bottom = smaller_rect.bottom
 
 
-def reverse_clamp_ip(smaller_rect, larger_rect):
-    if not larger_rect.contains(smaller_rect):
-        larger_rect.left = min(larger_rect.left, smaller_rect.left)
-        larger_rect.right = max(larger_rect.right, smaller_rect.right)
-        larger_rect.top = min(larger_rect.top, smaller_rect.top)
-        larger_rect.bottom = max(larger_rect.bottom, smaller_rect.bottom)
+# def reverse_clamp_ip(smaller_rect, larger_rect):
+#     if not larger_rect.contains(smaller_rect):
+#         larger_rect.left = min(larger_rect.left, smaller_rect.left)
+#         larger_rect.right = max(larger_rect.right, smaller_rect.right)
+#         larger_rect.top = min(larger_rect.top, smaller_rect.top)
+#         larger_rect.bottom = max(larger_rect.bottom, smaller_rect.bottom)
+
+def reverse_clamp_ip(smaller_rect: Rect, larger_rect: Rect):
+    if larger_rect.colliderect(smaller_rect):
+        collision_box = smaller_rect.clip(larger_rect)
+        x = collision_box.centerx - smaller_rect.centerx
+        y = collision_box.centery - smaller_rect.centery

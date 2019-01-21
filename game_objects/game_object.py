@@ -1,16 +1,18 @@
 import pygame
+from pygame.sprite import DirtySprite
 from components.component import Component
 
 
-class GameObject(object):
+class GameObject(DirtySprite):
     def __init__(self, game_objects, rect: pygame.Rect,
-                 surface: pygame.Surface = None):
+                 image: pygame.Surface = None):
+        super().__init__()
         self.rect = rect
-        if surface:
-            rect.size = surface.get_rect().size
+        if image:
+            rect.size = image.get_rect().size
         else:
-            surface = pygame.Surface(rect.size)
-        self.surface = surface
+            image = pygame.Surface(rect.size)
+        self.image = image
         self.area = None
         self.components = dict()
         self.real_x = self.rect.x
@@ -35,7 +37,7 @@ class GameObject(object):
             return self.components[ComponentClass]
         except:
             raise TypeError(
-                "GameObject does not have a",
+                "GameObject", self, "does not have a",
                 ComponentClass.__name__,
                 "component."
             )
@@ -44,8 +46,6 @@ class GameObject(object):
         for comp in self.components.values():
             comp.update(ms)
 
-    def get_blit(self):
-        blitinfo = [self.surface, self.rect.topleft]
-        if self.area:
-            blitinfo.append(self.area)
-        return blitinfo
+    def handle_events(self, events):
+        for comp in self.components.values():
+            comp.handle_events(events)

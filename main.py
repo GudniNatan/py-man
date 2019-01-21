@@ -21,10 +21,10 @@ def game_loop(screen, clock, scene_controller):
             running = False
             return
         events = pygame.event.get()
-        scene_controller.render(screen)
+        updates = scene_controller.render(screen)
         scene_controller.handle_events(events)
         scene_controller.update(clock.get_time())
-        pygame.display.update()
+        pygame.display.update(updates)
         clock.tick()
 
 if __name__ == "__main__":

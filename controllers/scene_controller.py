@@ -11,8 +11,7 @@ class SceneController(object):
         # timers.set_timer(pyEvent.Event(QUIT), 100, 1000)
 
     def render(self, screen):
-        self.__scene.render(screen)
-        pass
+        return self.__scene.render(screen)
 
     def handle_events(self, events):
         # Handle global events

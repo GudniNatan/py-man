@@ -1,6 +1,5 @@
 import pygame
 from components.component import Component
-from utils.pygame_utils import reverse_clamp_ip
 from math import atan2, sin, cos
 
 
@@ -59,7 +58,6 @@ class Physics(Component):
         self.game_object.real_y += dy
         self.game_object.update_pos()
 
-
     def detect_collision(self, ms):
         collision = self.rect.colliderect
         for game_object in self.game_object.game_objects:
@@ -72,3 +70,15 @@ class Physics(Component):
             if collision(game_object.rect):
                 # handle collision
                 self._handle_collision(game_object, ms)
+
+    def get_direction(self):
+        return self.direction
+
+    def get_speed(self):
+        return self.speed
+
+    def set_direction(self, direction: float):
+        self.direction = direction
+
+    def set_speed(self, speed: float):
+        self.speed = speed

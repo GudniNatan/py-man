@@ -3,24 +3,22 @@ from scenes.scene import Scene
 from utils.pygame_utils import *
 from game_objects.demo import Demo
 from game_objects.game_object import GameObject
-from components.physics import Physics
+from components.components import Physics, Player, Sprite
+
 
 class MenuScene(Scene):
     def __init__(self, controller):
         super().__init__(controller)
-        import sys
-        import os 
         connection_path = "fonts/Connection/Connection.otf"
         self.__font = pygame.font.Font(connection_path, 50)
         self.text = self.__font.render("py-Man", True, (255, 255, 255))
         self.text = pad(self.text, (0, 100), (255, 100, 100))
         demo = Demo(self.game_objects, self.text.get_rect(), self.text)
-        demo.get_component(Physics).direction = 0.3
-        demo.get_component(Physics).speed = 1
-        demo.get_component(Physics).bounciness = 1
+        demo.add_component(Sprite)
+        demo.add_component(Player)
         background = pygame.Surface(self.screen_rect.size)
         background.fill((20, 20, 20))
-        background = GameObject( self.game_objects,
+        background = GameObject(self.game_objects,
             pygame.Rect(0, 0, 0, 0), background
         )
         crect1 = Rect(self.screen_rect)
@@ -35,8 +33,9 @@ class MenuScene(Scene):
         collider2 = Demo(self.game_objects, crect2)
         collider3 = Demo(self.game_objects, crect3)
         collider4 = Demo(self.game_objects, crect4)
-        self.game_objects.extend([background, demo, collider1, collider2, collider3, collider4])
-
+        self.game_objects.add(
+            background, demo, collider1, collider2, collider3, collider4
+        )
 
     def handle_events(self, events):
         return super().handle_events(events)

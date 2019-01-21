@@ -6,7 +6,7 @@ class Scene(ABC):
     def __init__(self, controller):
         self.__controller = controller
         self.__last_scene = controller.get_scene()
-        self.game_objects = list()
+        self.game_objects = pygame.sprite.LayeredUpdates()
         self.screen_rect = pygame.display.get_surface().get_rect()
 
     @abstractmethod
@@ -15,13 +15,11 @@ class Scene(ABC):
 
     @abstractmethod
     def update(self, ms):
-        for g_obj in self.game_objects:
-            g_obj.update(ms)
+        self.game_objects.update(ms)
 
     @abstractmethod
     def render(self, screen):
-        blits = [g_obj.get_blit() for g_obj in self.game_objects]
-        screen.blits(blits)
+        return self.game_objects.draw(screen)
 
     def load(self):
         pass
