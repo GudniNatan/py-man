@@ -1,26 +1,33 @@
 from threading import Thread, Timer as threadTimer
-from pygame import event as pyEvent
+from pygame import event as pyEvent, register_quit
+from pygame.fastevent import post as post_event
+from pygame.fastevent import init as fastevent_init
+from pygame import init as pygame_init
 from math import floor
 
 # By Gudni Natan Gunnarsson, 2017
 
 
 class Timer(object):
+    """This is an internal class that handles individual timers.
+    Use the BetterTimers class instead."""
     def __init__(self, event, rate):
+        '''Create the timer object'''
         self.__running = False
         self.__event = event
         self.__rate = rate
         self.__t = None
+        fastevent_init()
 
-    def eventPoster(self, event, rate):
+    def _eventPoster(self, event, rate):
+        '''Posts events at the specified rate via a threadTimer.'''
         e = pyEvent
+        if type(event) is not e.EventType:
+            event = e.Event(event)
 
         def post(event):
-            if self.__running and self.__rate == rate:
-                if type(event) is e.EventType:
-                    e.post(event)
-                else:
-                    e.post(e.Event(event))
+            if self.__running:
+                post_event(event)
                 postThread.run()
                 if not postThread.daemon:
                     postThread.daemon = True
@@ -30,9 +37,12 @@ class Timer(object):
         postThread.start()
 
     def start_timer(self):
+        '''Start the event timer.  Object will start to post events at a
+        regular rate.
+        '''
         if not self.__running:
             self.__t = Thread(
-                target=self.eventPoster,
+                target=self._eventPoster,
                 args=(self.__event, self.__rate)
             )
             self.__t.daemon = True
@@ -40,11 +50,13 @@ class Timer(object):
             self.__t.start()
 
     def stop_timer(self):
+        '''Stop the event timer if it was running'''
         if self.__running:
             self.__running = False
             self.__t.join()
 
     def change_rate(self, rate):
+        '''Changes the timer rate and restarts it.'''
         self.__rate = rate
 
         self.stop_timer()
@@ -56,9 +68,15 @@ class Timer(object):
 
 class BetterTimers():
     def __init__(self):
+        '''Makes a BetterTimers object. Call pygame.quit to end all timers.'''
         self.__timers = list()
+        pygame_init()
+        register_quit(self.end_all_timers)
+        fastevent_init()
 
     def set_timer(self, event, rate, delay=0):
+        '''Sets a timer for an event. Each event object will only have one
+        timer associated with it. Setting a timers rate to 0 will stop it.'''
         if floor(delay) > 0:
             delayTimer = threadTimer(
                 float(delay - 1) / 1000.0,
@@ -82,7 +100,12 @@ class BetterTimers():
             t.start_timer()
             self.__timers.append(t)
 
+    def stop_timer(self, event):
+        '''Stops any timer associated to the given event.'''
+        self.set_timer(event, 0)
+
     def end_all_timers(self):
+        '''Stops all the timers'''
         for t in self.__timers:
             t.stop_timer()
 

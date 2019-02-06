@@ -1,6 +1,6 @@
 import pygame
 from pygame.sprite import DirtySprite
-from components.component import Component
+from components import Component, Physics
 
 
 class GameObject(DirtySprite):
@@ -37,9 +37,11 @@ class GameObject(DirtySprite):
             return self.components[ComponentClass]
         except:
             raise TypeError(
-                "GameObject", self, "does not have a",
-                ComponentClass.__name__,
-                "component."
+                 "{} {} {} {} {}".format(
+                    "GameObject", str(self), "does not have a",
+                    ComponentClass.__name__,
+                    "component."
+                 )
             )
 
     def update(self, ms):
@@ -49,3 +51,24 @@ class GameObject(DirtySprite):
     def handle_events(self, events):
         for comp in self.components.values():
             comp.handle_events(events)
+
+    def collide(self, collisions):
+        try:
+            physics = self.get_component(Physics)
+        except TypeError:
+            return
+        for game_object in collisions:
+            physics.handle_collision(game_object)
+
+    def blit(self, game_object, absolute=False):
+        '''
+        Pass in a game_object. If absolute, the location of the blit
+        will be absolute, otherwise it will be relative to the parent object.
+        '''
+        rect = game_object.rect
+        if absolute:
+            rect = pygame.Rect(rect)
+            rect.x -= self.rect.x
+            rect.y -= self.rect.y
+        self.image.blit(game_object.image, rect)
+

@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import QUIT
 from controllers.scene_controller import SceneController
-from better_timers.better_timers import timers
+from utils.pygame_utils import fix_path
 
 
 def init():
@@ -10,7 +10,6 @@ def init():
     screen = pygame.display.set_mode(window_size, pygame.DOUBLEBUF)
     clock = pygame.time.Clock()
     game_loop(screen, clock, SceneController())
-    timers.end_all_timers()
     pygame.quit()
 
 

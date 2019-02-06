@@ -1,6 +1,6 @@
 import pygame
 from game_objects.game_object import GameObject
-from components.components import Physics
+from components import Physics
 
 
 class Demo(GameObject):

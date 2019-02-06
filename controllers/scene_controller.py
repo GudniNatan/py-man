@@ -1,6 +1,5 @@
 from pygame.locals import KEYDOWN, K_ESCAPE, QUIT
 from pygame import event as pyEvent
-from better_timers.better_timers import timers
 from scenes.menu_scene import MenuScene
 
 

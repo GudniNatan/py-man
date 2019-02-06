@@ -1,6 +1,7 @@
 import pygame
 from pygame import Surface, Rect
 from utils.margins import Margins
+import os
 
 
 def blit_left(surface: Surface, source: Surface, point: tuple):
@@ -86,15 +87,33 @@ def reverse_clamp(smaller_rect, larger_rect):
 #             larger_rect.bottom = smaller_rect.bottom
 
 
-# def reverse_clamp_ip(smaller_rect, larger_rect):
-#     if not larger_rect.contains(smaller_rect):
-#         larger_rect.left = min(larger_rect.left, smaller_rect.left)
-#         larger_rect.right = max(larger_rect.right, smaller_rect.right)
-#         larger_rect.top = min(larger_rect.top, smaller_rect.top)
-#         larger_rect.bottom = max(larger_rect.bottom, smaller_rect.bottom)
+def reverse_clamp_ip(larger_rect: Rect, smaller_rect: Rect):
+    if not larger_rect.contains(smaller_rect):
+        larger_rect.left = min(larger_rect.left, smaller_rect.left)
+        larger_rect.right = max(larger_rect.right, smaller_rect.right)
+        larger_rect.top = min(larger_rect.top, smaller_rect.top)
+        larger_rect.bottom = max(larger_rect.bottom, smaller_rect.bottom)
 
-def reverse_clamp_ip(smaller_rect: Rect, larger_rect: Rect):
-    if larger_rect.colliderect(smaller_rect):
-        collision_box = smaller_rect.clip(larger_rect)
-        x = collision_box.centerx - smaller_rect.centerx
-        y = collision_box.centery - smaller_rect.centery
+
+def push_ip(larger_rect: Rect, smaller_rect: Rect):
+    '''Larger rect pushes out smaller rect via the smallest possible vector.'''
+    clip = larger_rect.clip(smaller_rect)
+    if not clip:
+        return
+    if clip.height <= clip.width:
+        if smaller_rect.centery <= clip.centery:
+            smaller_rect.bottom = larger_rect.top
+        else:
+            smaller_rect.top = larger_rect.bottom
+    else:
+        if smaller_rect.centerx <= clip.centerx:
+            smaller_rect.right = larger_rect.left
+        else:
+            smaller_rect.left = larger_rect.right
+
+
+def fix_path():
+    '''Sets the path to the main folder dir. This is kinda hacky...'''
+    file_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(file_path)
+    os.chdir("..")
